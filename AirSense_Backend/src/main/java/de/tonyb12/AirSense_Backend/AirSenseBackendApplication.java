@@ -12,7 +12,7 @@ public class AirSenseBackendApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(AirSenseBackendApplication.class, args);
-		
+
 	}
 
 }

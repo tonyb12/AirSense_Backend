@@ -3,6 +3,8 @@ package de.tonyb12.AirSense_Backend.managers;
 import de.tonyb12.AirSense_Backend.modell.Weather;
 import org.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,17 +12,23 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class WeatherCallManager {
 
+    @Value("${weather.api.key}")
+    private String apiKey;
 
-    private String apiKey = "db0b68eae186415c9a5134630241910";
+    @Value("${weather.api.url.template}")
+    private String urlTemplate;
 
-    private  String urlTemplate = "http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no";
-
-    private  String city = "Munich";
+    @Value("${weather.api.city}")
+    private String city;
 
     private RestTemplate restTemplate = new RestTemplate();;
 
     private Weather weather = new Weather();
 
+    @Autowired
+    public WeatherCallManager(){
+
+    }
 
     // gets the humid outside in Munich
     public int getHumid() {

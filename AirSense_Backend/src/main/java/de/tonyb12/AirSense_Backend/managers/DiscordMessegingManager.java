@@ -1,5 +1,7 @@
 package de.tonyb12.AirSense_Backend.managers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 
 import org.springframework.stereotype.Component;
@@ -12,14 +14,28 @@ import java.util.Map;
 @Component
 public class DiscordMessegingManager {
 
-    // yup it sucks thats hardcoded i know application.properties and injection from spring boot doesnt work correctly maybe have to do that manually
-    private String channelId = "1297894829954437190";
-    private String clientId = "1297896535693987902";
-    private String permissions = "283467841536";
-    private String scope = "bot";
-    private String createWebHookUrl = "https://discordapp.com/api/channels/1297894829954437190/webhooks";
-    private String webhookUrl = "https://discord.com/api/webhooks/1297894889815675021/aDjlGkdzPZiO5njdY2l7ktY2_c8URhLYwPpEIyo76Hsct8c2RXhIJVCWwN7xTZZ0s5PM";
+    @Value("${discord.api.channelId}")
+    private String channelId;
 
+
+    @Value("${discord.api.clientId}")
+    private String clientId;
+    @Value("${discord.api.permissions}")
+    private String permissions;
+    @Value("${discord.api.scope}")
+    private String scope;
+    @Value("${discord.api.createwebhookurl}")
+    private String createWebHookUrl;
+    @Value("${discord.api.webhookurl}")
+    private String webhookUrl;
+    @Value("${discord.api.headervalue}")
+    private String headerValue;
+
+    @Autowired
+    public DiscordMessegingManager(){
+
+
+    }
 
     // the bot toke has to be in the properties file same as above
     public String createDiscordWebhook(){
@@ -28,7 +44,7 @@ public class DiscordMessegingManager {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bot " + "MTI5Nzg5NjUzNTY5Mzk4NzkwMg.GhGyz9.QD1st4fJbkBvHwfhYPWRLbPY8hKBNcKU5wyx0s");
+        headers.add("Authorization", headerValue);
         headers.add("Accept", "application/json");
 
 
