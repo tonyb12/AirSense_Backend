@@ -5,9 +5,18 @@ public class AirHeatingModell {
 
     private boolean isAirNeeded;
     private boolean isHeatNeeded;
-
+    private double requiredTemperatureForHeating;
+    private double absoluteHumidityDifference;
     private double temperatureOutside;
     private int humidLevelOutside;
+
+    public double getAbsoluteHumidityDifference() {
+        return absoluteHumidityDifference;
+    }
+
+    public void setAbsoluteHumidityDifference(double absoluteHumidityDifference) {
+        this.absoluteHumidityDifference = absoluteHumidityDifference;
+    }
 
     public double getTemperatureOutside() {
         return temperatureOutside;
@@ -41,20 +50,30 @@ public class AirHeatingModell {
         isHeatNeeded = heatNeeded;
     }
 
+    public double getRequiredTemperatureForHeating() {
+        return requiredTemperatureForHeating;
+    }
+
+    public void setRequiredTemperatureForHeating(double requiredTemperatureForHeating) {
+        this.requiredTemperatureForHeating = requiredTemperatureForHeating;
+    }
+
     //returns the Steps that has to been done
     @Override
     public String toString() {
 
         if(isAirNeeded){
 
-            return "{ Es wird empfholen zu lueften }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }";
+            return "{ Es wird empfholen zu lueften }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }" + "\n" + "{ Durch das Lueften kann die Luftfeuchtigkeit um " + absoluteHumidityDifference + " g/m³ gesenkt werden }";
         }
 
         if(isHeatNeeded){
 
-            return "{ Es wird empfholen zu heizen }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }";
+            return "{ Es wird empfholen zu heizen }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }" + "\n" +"{ Empfohlene Raumtemperatur: " + requiredTemperatureForHeating + " }";
         }
 
         return "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside +" }" + "\n" + "{ Aktuell kann keine richtige Aussage getroffen werden was helfen wird.}";
     }
+
+
 }

@@ -10,39 +10,56 @@ public class AirSenseManager {
         AirHeatingModell airHeatingModell = new AirHeatingModell();
 
 
-        // help method for getting dewPoint(Taupunkt)
-        private double calculateDewPoint(double temperature, int humidLevel){
+       private double calculateSaturationVaporPressure(double temperature){
 
-            double a = 17.27;
-            double b = 237.7;
+           return 6.112 * Math.exp((17.67 * temperature) / (temperature + 243.5));
+       }
 
-            double alpha = ((a * temperature) / (b + temperature)) + Math.log(humidLevel / 100.0);
 
-            return (b * alpha) / (a - alpha);
+
+        private double calculateAbsoluteHumidity(double temperature, int humidity) {
+             double saturationVaporPressure = 6.112 * Math.exp((17.67 * temperature) / (temperature + 243.5));
+            return (saturationVaporPressure * humidity * 2.1674) / (temperature + 273.15);
         }
 
-        // help method for getting the relative humid level
-        private double calculateRelativeHumidity(double temperature, double dewPoint){
+        private double calculateRequiredTemperature(double initialTemperature,double initialHumidity, double targetHumidity){
 
-            double exponentTemp = (17.27 * temperature) / (temperature + 237.7);
-            double exponentDewPoint = (17.27 * dewPoint) / (dewPoint + 237.7);
+           double saturationPressureInitial = calculateSaturationVaporPressure(initialTemperature);
+           double absoluteHumidity = saturationPressureInitial * (initialHumidity / 100);
 
-            return 100 * (Math.exp(exponentDewPoint) / Math.exp(exponentTemp));
+            return (243.5 * Math.log(absoluteHumidity / (6.112 * (targetHumidity / 100.0)))) / (17.67 - Math.log(absoluteHumidity / (6.112 * (targetHumidity / 100.0))));
         }
 
+
+
+
+        private double calculateHumidityDifference(double absoluteHumidityInside, double absoluteHumidityOutside){
+
+            return absoluteHumidityInside - absoluteHumidityOutside;
+        }
 
         // function that says if u have to air ur room not quite sure if it works correctly lol but online tester says the same as this function soo.....
         private boolean isAirNeeded(double temperatureInside,int humidLevelInside, double temperatureOutside, int humidLevelOutside ){
 
-            double dewPointInside = calculateDewPoint(temperatureInside, humidLevelInside);
-            double dewPointOutside = calculateDewPoint(temperatureOutside, humidLevelOutside);
+            double absoluteHumidityInside = calculateAbsoluteHumidity(temperatureInside, humidLevelInside);
+            double absoluteHumidityOutside = calculateAbsoluteHumidity(temperatureOutside, humidLevelOutside);
 
-            double relativeHumidLevelInside = calculateRelativeHumidity(temperatureInside, dewPointInside);
-            double relativeHumidLevelOutside = calculateRelativeHumidity(temperatureOutside, dewPointOutside);
+            double humidDifference = calculateHumidityDifference(absoluteHumidityInside,absoluteHumidityOutside);
+
+            System.out.println("Absolute Luftfeuchtigkeit Innen: " + absoluteHumidityInside);
+            System.out.println("Absolute Luftfeuchtigkeit Aussen: " + absoluteHumidityOutside);
+
+            boolean shouldAir = humidDifference > 0.5 ;
 
 
-            boolean shouldAir = relativeHumidLevelInside >  humidLevelOutside;
-            return shouldAir && relativeHumidLevelOutside < 80;
+
+            if(shouldAir){
+                System.out.println("Es sollte gelueftet werden");
+                return true;
+            }else{
+                    System.out.println("Lueften ist nicht empfohlen");
+                    return false;
+                }
         }
 
 
@@ -54,36 +71,34 @@ public class AirSenseManager {
 
 
         // self explained
-        public AirHeatingModell isAirOrHeatNeeded(double temperatureInside, int humidLevelInside, double temperatureOutside, int humidLevelOutside){
+        public AirHeatingModell isAirOrHeatNeeded(double temperatureInside, int humidLevelInside, double temperatureOutside, int humidLevelOutside) {
 
-            boolean air = isAirNeeded(temperatureInside,humidLevelInside,temperatureOutside,humidLevelOutside);
-            boolean heat = isHeatingNeeded(temperatureInside, humidLevelInside);
+            double absoluteHumidityInside = calculateAbsoluteHumidity(temperatureInside, humidLevelInside);
+            double absoluteHumidityOutside = calculateAbsoluteHumidity(temperatureOutside, humidLevelOutside);
 
-            airHeatingModell.setHumidLevelOutside(humidLevelOutside);
-            airHeatingModell.setTemperatureOutside(temperatureOutside);
+            double requiredTemperatureForHeating = calculateRequiredTemperature(temperatureInside, humidLevelInside, 58);
+            double humidityDifference = absoluteHumidityInside - absoluteHumidityOutside;
 
-            if(air){
+            airHeatingModell.setRequiredTemperatureForHeating(requiredTemperatureForHeating);
+            airHeatingModell.setAbsoluteHumidityDifference(humidityDifference);
+
+            if (humidityDifference > 0) {
+                System.out.println("Humid Difference: " + humidityDifference);
                 airHeatingModell.setAirNeeded(true);
-                System.out.println("Es sollte gelueftet werden");
-            }
 
-            if(!air){
-                airHeatingModell.setAirNeeded(false);
-                System.out.println("Lueften ist nicht empfholen");
-            }
+            } else if (temperatureInside < requiredTemperatureForHeating) {
 
-            if(heat){
                 airHeatingModell.setHeatNeeded(true);
-                System.out.println("Heizen ist notwendig");
+
             }
 
-            if (!heat){
-                airHeatingModell.setHeatNeeded(false);
-                System.out.println("Heizen ist nicht notwendig");
-            }
+                airHeatingModell.setTemperatureOutside(temperatureOutside);
+                airHeatingModell.setHumidLevelOutside(humidLevelOutside);
 
-            return airHeatingModell;
+                return airHeatingModell;
         }
+
+
 
 
 

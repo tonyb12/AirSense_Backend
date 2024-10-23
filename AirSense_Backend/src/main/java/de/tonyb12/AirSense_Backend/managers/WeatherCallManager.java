@@ -35,7 +35,6 @@ public class WeatherCallManager {
 
         try {
             String requestUrl = String.format(urlTemplate, apiKey, city);
-            System.out.println("RequestUrl: " + requestUrl);
             String response = restTemplate.getForObject(requestUrl, String.class);
             JSONObject jsonResponse = new JSONObject(response);
             weather.setHumidLevel(jsonResponse.getJSONObject("current").getInt("humidity"));
