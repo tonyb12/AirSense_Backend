@@ -67,6 +67,11 @@ public class AirHeatingModell {
             return "{ Es wird empfholen zu lueften }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }" + "\n" + "{ Durch das Lueften kann die Luftfeuchtigkeit um " + absoluteHumidityDifference + " g/m³ gesenkt werden }";
         }
 
+        if(!isAirNeeded){
+
+            return "{ Es wird empfohlen nicht zu lueften weil die Luffeuchtigkeit steigen koennte}";
+        }
+
         if(isHeatNeeded){
 
             return "{ Es wird empfholen zu heizen }" + "\n" + "{ Temperatur aktuell in Muenchen: " + temperatureOutside + " }" + "\n" + "{ Luftfeuchtigkeit aktuell in Muenchen: " + humidLevelOutside + " }" + "\n" +"{ Empfohlene Raumtemperatur: " + requiredTemperatureForHeating + " }";

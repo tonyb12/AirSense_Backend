@@ -38,58 +38,36 @@ public class AirSenseManager {
             return absoluteHumidityInside - absoluteHumidityOutside;
         }
 
-        // function that says if u have to air ur room not quite sure if it works correctly lol but online tester says the same as this function soo.....
-        private boolean isAirNeeded(double temperatureInside,int humidLevelInside, double temperatureOutside, int humidLevelOutside ){
-
-            double absoluteHumidityInside = calculateAbsoluteHumidity(temperatureInside, humidLevelInside);
-            double absoluteHumidityOutside = calculateAbsoluteHumidity(temperatureOutside, humidLevelOutside);
-
-            double humidDifference = calculateHumidityDifference(absoluteHumidityInside,absoluteHumidityOutside);
-
-            System.out.println("Absolute Luftfeuchtigkeit Innen: " + absoluteHumidityInside);
-            System.out.println("Absolute Luftfeuchtigkeit Aussen: " + absoluteHumidityOutside);
-
-            boolean shouldAir = humidDifference > 0.5 ;
 
 
 
-            if(shouldAir){
-                System.out.println("Es sollte gelueftet werden");
-                return true;
-            }else{
-                    System.out.println("Lueften ist nicht empfohlen");
-                    return false;
-                }
-        }
 
-
-        // not sure if 21 and 60 is a good reference for this test
-        private boolean isHeatingNeeded(double temperatureInside, int humidLevelInside){
-
-            return (temperatureInside < 21 && humidLevelInside > 60);
-        }
-
-
-        // self explained
+        //
         public AirHeatingModell isAirOrHeatNeeded(double temperatureInside, int humidLevelInside, double temperatureOutside, int humidLevelOutside) {
 
             double absoluteHumidityInside = calculateAbsoluteHumidity(temperatureInside, humidLevelInside);
             double absoluteHumidityOutside = calculateAbsoluteHumidity(temperatureOutside, humidLevelOutside);
 
             double requiredTemperatureForHeating = calculateRequiredTemperature(temperatureInside, humidLevelInside, 58);
-            double humidityDifference = absoluteHumidityInside - absoluteHumidityOutside;
+            double humidityDifference = calculateHumidityDifference(absoluteHumidityInside,absoluteHumidityOutside);
 
             airHeatingModell.setRequiredTemperatureForHeating(requiredTemperatureForHeating);
             airHeatingModell.setAbsoluteHumidityDifference(humidityDifference);
 
-            if (humidityDifference > 0) {
-                System.out.println("Humid Difference: " + humidityDifference);
+
+
+            if(humidityDifference > 0 ){
+
+                System.out.println("Humid Difference2: " + humidityDifference);
                 airHeatingModell.setAirNeeded(true);
+            } else {
 
-            } else if (temperatureInside < requiredTemperatureForHeating) {
+                airHeatingModell.setAirNeeded(false);
+            }
 
+
+            if(temperatureInside < requiredTemperatureForHeating){
                 airHeatingModell.setHeatNeeded(true);
-
             }
 
                 airHeatingModell.setTemperatureOutside(temperatureOutside);
